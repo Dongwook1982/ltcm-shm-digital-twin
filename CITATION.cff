@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "LTCM Reproducibility Package: Signal-Driven Lifecycle Memory for SHM Digital Twins"
+authors:
+  - family-names: Kim
+    given-names: Dong-Wook
+    orcid: "https://orcid.org/0000-0002-0721-5114"
+    affiliation: "DL E&C Co., Ltd., Seoul, Republic of Korea"
+    email: clearup7@nate.com
+version: "1.0.0"
+date-released: "2025-01-01"
+license: CC-BY-4.0
+repository-code: "https://github.com/[your-username]/ltcm-shm-digital-twin"
+abstract: >
+  Reproducibility package for the LTCM (Long-Term Construction Memory) framework
+  for SHM-integrated Digital Twins. Includes OWL/Turtle ontology, system configuration,
+  PINN training scripts, SPARQL query examples, MARG prompt template, and 40
+  representative benchmark queries (Supplementary S1).
+keywords:
+  - structural health monitoring
+  - digital twin
+  - lifecycle memory
+  - physics-informed neural networks
+  - knowledge graph
+  - retrieval-augmented generation
+preferred-citation:
+  type: article
+  title: "Signal-Driven Lifecycle Memory for Structural Health Monitoring Digital Twins"
+  authors:
+    - family-names: Kim
+      given-names: Dong-Wook
+  journal: "Mechanical Systems and Signal Processing"
+  year: 2025
