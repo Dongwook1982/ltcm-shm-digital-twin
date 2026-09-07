@@ -13,7 +13,7 @@ license: CC-BY-4.0
 repository-code: "https://github.com/Dongwook1982/ltcm-shm-digital-twin"
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.22558619
+    value: 10.5281/zenodo.22591646
     description: "Zenodo reproducibility package DOI"
 abstract: >
   Reproducibility package for the LTCM (Long-Term Construction Memory) framework
