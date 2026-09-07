@@ -1,0 +1,237 @@
+{
+  "_comment": "LTCM Episodic Memory Record Schema and Representative Examples. Actual operational records are confidential; these are representative examples illustrating the data format. Corresponding to Sec 3.1 and Appendix A of the main manuscript.",
+  "_paper": "Signal-Driven Lifecycle Memory for SHM Digital Twins (submitted to MSSP, 2026)",
+  "_author": "Dong-Wook Kim, DL E&C Co., Ltd.",
+
+  "schema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "LTCM Episodic Memory Record",
+    "description": "Formally defined as E = {e_i | e_i = (t_i, loc_i, type_i, sig_i, outcome_i)}",
+    "type": "object",
+    "required": ["memory_id","memory_type","timestamp","asset_guid","event_type","severity_score","signal_values","significance_score","memory_tier"],
+    "properties": {
+      "memory_id":        {"type":"string",  "description":"Unique identifier: [Case]-[EventType]-[YYYY]-[Location]"},
+      "memory_type":      {"type":"string",  "enum":["Episodic","Semantic","Procedural","Predictive"]},
+      "timestamp":        {"type":"string",  "format":"date-time"},
+      "asset_guid":       {"type":"string",  "description":"IFC 4.3 element GUID (22-character base64url)"},
+      "asset_class":      {"type":"string",  "enum":["bridge","railway","road"]},
+      "asset_label":      {"type":"string",  "description":"Human-readable element label, e.g. 'Span 9 / Track Geometry'"},
+      "event_type":       {"type":"string",  "enum":["sensor_anomaly","inspection","work_order","emergency","routine_survey"]},
+      "severity_score":   {"type":"number",  "minimum":0,"maximum":1, "description":"Normalized severity ∈ [0,1]"},
+      "signal_values":    {"type":"object",  "description":"Key-value map of sensor readings with units"},
+      "significance_score":{"type":"number", "minimum":0,"maximum":1, "description":"S(m) = w1*sev + w2*uniq + w3*decay"},
+      "uniqueness_score": {"type":"number",  "minimum":0,"maximum":1, "description":"1 - max_sim(m, E)"},
+      "memory_tier":      {"type":"string",  "enum":["hot","warm","cold"]},
+      "outcome":          {"type":"string",  "description":"Maintenance outcome or follow-up action"},
+      "related_records":  {"type":"array",   "items":{"type":"string"}, "description":"IDs of causally related records"},
+      "provenance":       {"type":"object",  "properties":{"source_system":{"type":"string"}, "operator":{"type":"string"}, "recorded_by":{"type":"string"}}}
+    }
+  },
+
+  "examples": [
+    {
+      "_case": "Case A — Railway Viaduct",
+      "memory_id": "A-GEO-2021-S09",
+      "memory_type": "Episodic",
+      "timestamp": "2021-09-15T10:23:00+09:00",
+      "asset_guid": "1B2C3D4E5F6A7B8C9D0E1F2A",
+      "asset_class": "railway",
+      "asset_label": "Span 9 / Track Geometry Node TG-SP09-A",
+      "event_type": "routine_survey",
+      "severity_score": 0.76,
+      "signal_values": {
+        "absolute_settlement_mm": 11.4,
+        "differential_settlement_adjacent_mm": 2.1,
+        "survey_method": "bi-axial levelling",
+        "track_section": "Section 9",
+        "cumulative_load_cycles_million": 142.3
+      },
+      "significance_score": 0.74,
+      "uniqueness_score": 0.68,
+      "memory_tier": "hot",
+      "outcome": "Level-1 monitoring triggered; re-survey scheduled Q1-2022",
+      "related_records": ["A-GEO-2019-S09", "A-GEO-2023-S09", "A-WO-2022-S09"],
+      "provenance": {
+        "source_system": "Railway Track Management System (RTMS)",
+        "operator": "National Railway Authority (anonymised)",
+        "recorded_by": "Senior Track Engineer (ID anonymised)"
+      },
+      "_note": "Settlement 11.4 mm = 76% of KR C-14020 threshold (15 mm). Sato-Odaka fitted rate: 1.73 mm/yr."
+    },
+    {
+      "_case": "Case A — Railway Viaduct",
+      "memory_id": "A-IOT-2022-S09-SET02",
+      "memory_type": "Episodic",
+      "timestamp": "2022-08-03T14:11:37+09:00",
+      "asset_guid": "2C3D4E5F6A7B8C9D0E1F2A3B",
+      "asset_class": "railway",
+      "asset_label": "Span 9 / Settlement Sensor SET02",
+      "event_type": "sensor_anomaly",
+      "severity_score": 0.82,
+      "signal_values": {
+        "settlement_mm": 12.6,
+        "exceedance_sigma": 2.4,
+        "sensor_id": "SET02",
+        "span_id": "SP09",
+        "reading_frequency_hz": 0.1
+      },
+      "significance_score": 0.79,
+      "uniqueness_score": 0.71,
+      "memory_tier": "hot",
+      "outcome": "Automated alert generated; on-site inspection dispatched within 2 hr",
+      "related_records": ["A-GEO-2021-S09", "A-IOT-2022-S09-ACC03", "A-WO-2022-S09"],
+      "provenance": {
+        "source_system": "IoT Monitoring Platform (Apache Kafka stream)",
+        "operator": "National Railway Authority (anonymised)",
+        "recorded_by": "Automated anomaly detection (Isolation Forest, >2σ)"
+      }
+    },
+    {
+      "_case": "Case A — Railway Viaduct",
+      "memory_id": "A-WO-2019-EMG-03",
+      "memory_type": "Episodic",
+      "timestamp": "2019-07-12T23:45:00+09:00",
+      "asset_guid": "3D4E5F6A7B8C9D0E1F2A3B4C",
+      "asset_class": "railway",
+      "asset_label": "Track Section / Emergency Closure Record",
+      "event_type": "emergency",
+      "severity_score": 0.95,
+      "signal_values": {
+        "trigger": "differential_settlement_exceedance",
+        "differential_settlement_mm": 3.4,
+        "affected_spans": ["SP07","SP08"],
+        "closure_duration_hr": 6.5,
+        "speed_restriction_kmh": 0
+      },
+      "significance_score": 0.91,
+      "uniqueness_score": 0.85,
+      "memory_tier": "hot",
+      "outcome": "Emergency tamping; ballast reinforcement; reopened 2019-07-13 06:30",
+      "related_records": ["A-WO-2019-EMG-01", "A-WO-2019-EMG-02", "A-GEO-2019-S07"],
+      "provenance": {
+        "source_system": "Operations Control Centre (OCC) incident log",
+        "operator": "National Railway Authority (anonymised)",
+        "recorded_by": "OCC Duty Officer"
+      },
+      "_note": "Part of 2019 emergency cluster (3 events in 8 months); triggered Class-A investigation."
+    },
+    {
+      "_case": "Case B — Expressway Section 4",
+      "memory_id": "B-PCI-2022-KM10-15",
+      "memory_type": "Episodic",
+      "timestamp": "2022-10-20T09:00:00+09:00",
+      "asset_guid": "4E5F6A7B8C9D0E1F2A3B4C5D",
+      "asset_class": "road",
+      "asset_label": "Expressway Sec.4 / km 10.0–15.0 Pavement Segment",
+      "event_type": "routine_survey",
+      "severity_score": 0.61,
+      "signal_values": {
+        "pci_score": 58,
+        "iri_m_per_km": 2.8,
+        "rut_depth_mm": 12.1,
+        "survey_method": "profilometer + visual inspection",
+        "segment_km_start": 10.0,
+        "segment_km_end": 15.0,
+        "esal_million_cumulative": 48.7
+      },
+      "significance_score": 0.64,
+      "uniqueness_score": 0.52,
+      "memory_tier": "warm",
+      "outcome": "Semi-annual inspection frequency confirmed; FWD assessment scheduled",
+      "related_records": ["B-PCI-2020-KM10-15", "B-FWD-2022-KM14", "B-GPR-2020-KM14-16"],
+      "provenance": {
+        "source_system": "Pavement Management System (PMS)",
+        "operator": "Korea Expressway Corporation (anonymised)",
+        "recorded_by": "Road Condition Survey Team"
+      },
+      "_note": "PCI 58 → semi-annual inspection per MOLIT spec. Degradation rate 4.3 PCI/yr (above 3.0 threshold)."
+    },
+    {
+      "_case": "Case C — PSC Bridge",
+      "memory_id": "C-BR-2020-EMG-SP4B",
+      "memory_type": "Episodic",
+      "timestamp": "2020-03-18T08:30:00+09:00",
+      "asset_guid": "5F6A7B8C9D0E1F2A3B4C5D6E",
+      "asset_class": "bridge",
+      "asset_label": "PSC Bridge / Span 4 Bearing 4B (IfcBearing)",
+      "event_type": "emergency",
+      "severity_score": 0.97,
+      "signal_values": {
+        "failure_mode": "sudden_bearing_failure",
+        "corrosion_grade_prior_inspection": "Grade-D (2018)",
+        "load_eccentricity_cm": 4.8,
+        "vertical_load_kn": 2900,
+        "repair_cost_krw_million": 18.7,
+        "closure_duration_days": 3
+      },
+      "significance_score": 0.95,
+      "uniqueness_score": 0.92,
+      "memory_tier": "hot",
+      "outcome": "Emergency replacement; temporary shoring; traffic restored after 3 days",
+      "related_records": ["C-INS-2018-GD-SP4", "C-INS-2018-GD-SP3", "C-INS-2018-GD-SP2", "C-BR-2020-EMG-ROOT-CAUSE"],
+      "provenance": {
+        "source_system": "Bridge Management System (BMS)",
+        "operator": "Regional Bridge Authority (anonymised)",
+        "recorded_by": "Bridge Safety Inspector"
+      },
+      "_note": "BR-011 event. Preceded by 3 Grade-D corrosion findings on adjacent spans (2018). Retrospective LTCM analysis shows pattern would have triggered proactive L2 inspection recommendation."
+    },
+    {
+      "_case": "Case C — PSC Bridge",
+      "memory_id": "C-INS-2023-GR-SP1B",
+      "memory_type": "Episodic",
+      "timestamp": "2023-11-07T14:20:00+09:00",
+      "asset_guid": "6A7B8C9D0E1F2A3B4C5D6E7F",
+      "asset_class": "bridge",
+      "asset_label": "PSC Bridge / Span 1 Bearing 1B (IfcBearing)",
+      "event_type": "inspection",
+      "severity_score": 0.55,
+      "signal_values": {
+        "corrosion_grade": "Grade-C",
+        "ptfe_wear_depth_pct_of_design": 24,
+        "vertical_deformation_mm": 3.2,
+        "load_cell_kn": 2710,
+        "salt_deposit_observed": true,
+        "inspector_recommendation": "monitor; re-inspect within 18 months"
+      },
+      "significance_score": 0.58,
+      "uniqueness_score": 0.47,
+      "memory_tier": "warm",
+      "outcome": "Grade-C monitoring status; re-inspection scheduled 2025-Q1",
+      "related_records": ["C-INS-2020-GR-SP1B", "PD-C-SP1B-2025-FORECAST"],
+      "provenance": {
+        "source_system": "Bridge Management System (BMS)",
+        "operator": "Regional Bridge Authority (anonymised)",
+        "recorded_by": "Certified Bridge Inspector (KEC Grade-1)"
+      }
+    }
+  ],
+
+  "corpus_statistics": {
+    "total_episodic_records_post_consolidation": 6534,
+    "case_a_railway": {
+      "total": 2341,
+      "geometric_surveys": 24,
+      "iot_anomaly_records": 1847,
+      "work_orders": 157,
+      "emergency_events": 23,
+      "consolidation_reduction_pct": 9.3
+    },
+    "case_b_road": {
+      "total": 2146,
+      "pci_surveys": 16,
+      "pothole_repair_records": 342,
+      "fwd_surveys": 8,
+      "gpr_surveys": 8,
+      "consolidation_reduction_pct": 7.8
+    },
+    "case_c_bridge": {
+      "total": 2047,
+      "bearing_replacement_events": 14,
+      "grade_d_inspection_findings": 8,
+      "load_cell_records": 1821,
+      "visual_inspections": 204,
+      "consolidation_reduction_pct": 6.4
+    }
+  }
+}

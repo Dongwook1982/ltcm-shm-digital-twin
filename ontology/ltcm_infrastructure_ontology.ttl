@@ -1,0 +1,391 @@
+@prefix ltcm:   <https://ltcm.dlenc.kr/ontology#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix ifc:    <https://standards.buildingsmart.org/IFC/RELEASE/IFC4_3#> .
+@prefix dcterms:<http://purl.org/dc/terms/> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+
+# Ontology Metadata
+<https://ltcm.dlenc.kr/ontology>
+    a owl:Ontology ;
+    dcterms:title "LTCM Infrastructure O&M Ontology" ;
+    dcterms:description "Long-Term Construction Memory ontology for infrastructure SHM Digital Twins. Covers bridge, railway, and road infrastructure." ;
+    dcterms:creator "Dong-Wook Kim, DL E&C Co., Ltd." ;
+    dcterms:date "2025-01-01"^^xsd:date ;
+    dcterms:rights "CC BY 4.0" ;
+    owl:versionInfo "1.0.1" ;
+    rdfs:comment "Supplementary to: Signal-Driven Lifecycle Memory for SHM Digital Twins (submitted to MSSP, 2026)." .
+
+# ---------------------------------------------------------------
+# SECTION 1: MEMORY TYPE HIERARCHY
+# ---------------------------------------------------------------
+
+ltcm:MemoryRecord
+    a owl:Class ;
+    rdfs:label "Memory Record" ;
+    rdfs:comment "Superclass of all LTCM memory records." .
+
+ltcm:EpisodicRecord
+    a owl:Class ;
+    rdfs:subClassOf ltcm:MemoryRecord ;
+    rdfs:label "Episodic Memory Record" ;
+    rdfs:comment "Timestamped, spatially anchored event record with sensor context." .
+
+ltcm:SemanticNode
+    a owl:Class ;
+    rdfs:subClassOf ltcm:MemoryRecord ;
+    rdfs:label "Semantic Memory Node" ;
+    rdfs:comment "OWL-DL concept: failure modes, material properties, design code requirements." .
+
+ltcm:ProceduralGraph
+    a owl:Class ;
+    rdfs:subClassOf ltcm:MemoryRecord ;
+    rdfs:label "Procedural Memory Graph" ;
+    rdfs:comment "BPMN-aligned conditional action sequence for inspection or intervention." .
+
+ltcm:PredictiveRecord
+    a owl:Class ;
+    rdfs:subClassOf ltcm:MemoryRecord ;
+    rdfs:label "Predictive Memory Record" ;
+    rdfs:comment "PINN-generated failure probability estimate with confidence interval." .
+
+# ---------------------------------------------------------------
+# SECTION 2: INFRASTRUCTURE ASSET HIERARCHY
+# ---------------------------------------------------------------
+
+ltcm:InfrastructureAsset
+    a owl:Class ;
+    rdfs:label "Infrastructure Asset" .
+
+ltcm:BridgeAsset
+    a owl:Class ;
+    rdfs:subClassOf ltcm:InfrastructureAsset ;
+    rdfs:label "Bridge Asset" ;
+    skos:exactMatch ifc:IfcBridge .
+
+ltcm:RailwayAsset
+    a owl:Class ;
+    rdfs:subClassOf ltcm:InfrastructureAsset ;
+    rdfs:label "Railway Asset" ;
+    skos:exactMatch ifc:IfcAlignment .
+
+ltcm:RoadAsset
+    a owl:Class ;
+    rdfs:subClassOf ltcm:InfrastructureAsset ;
+    rdfs:label "Road Asset" ;
+    skos:exactMatch ifc:IfcPavement .
+
+ltcm:StructuralElement
+    a owl:Class ;
+    rdfs:subClassOf ltcm:InfrastructureAsset ;
+    rdfs:label "Structural Element" ;
+    skos:exactMatch ifc:IfcBeam .
+
+ltcm:BearingAsset
+    a owl:Class ;
+    rdfs:subClassOf ltcm:StructuralElement ;
+    rdfs:label "Bearing Asset" ;
+    skos:exactMatch ifc:IfcBearing .
+
+ltcm:PavementAsset
+    a owl:Class ;
+    rdfs:subClassOf ltcm:RoadAsset ;
+    rdfs:label "Pavement Asset" ;
+    skos:exactMatch ifc:IfcPavement .
+
+ltcm:GeometricAsset
+    a owl:Class ;
+    rdfs:subClassOf ltcm:RailwayAsset ;
+    rdfs:label "Track Geometry Asset" ;
+    skos:exactMatch ifc:IfcAlignment .
+
+# ---------------------------------------------------------------
+# SECTION 3: FAILURE MODE HIERARCHY
+# ---------------------------------------------------------------
+
+ltcm:FailureMode
+    a owl:Class ;
+    rdfs:label "Failure Mode" ;
+    rdfs:comment "Degradation mechanism or failure type." .
+
+# Bearing failure modes
+ltcm:BearingDegradation
+    a owl:Class ;
+    rdfs:subClassOf ltcm:FailureMode ;
+    rdfs:label "Bearing Degradation" .
+
+ltcm:BearingSteelCorrosion
+    a owl:Class ;
+    rdfs:subClassOf ltcm:BearingDegradation ;
+    rdfs:label "Bearing Steel Corrosion" ;
+    rdfs:comment "Power-law mass-loss: M_loss = k * t^n. Electrochemical corrosion under chloride exposure." .
+
+ltcm:BearingSlidingLayerWear
+    a owl:Class ;
+    rdfs:subClassOf ltcm:BearingDegradation ;
+    rdfs:label "Bearing Sliding-Layer Wear" ;
+    rdfs:comment "Archard wear law: Wear = k * P * v. PTFE or elastomeric sliding layer." .
+
+ltcm:AnchorBoltFailure
+    a owl:Class ;
+    rdfs:subClassOf ltcm:BearingDegradation ;
+    rdfs:label "Anchor Bolt Failure" .
+
+# Bridge structural failure modes
+ltcm:FatigueCrackGrowth
+    a owl:Class ;
+    rdfs:subClassOf ltcm:FailureMode ;
+    rdfs:label "Fatigue Crack Growth" ;
+    rdfs:comment "Paris law: da/dN = C * (delta_K)^m." .
+
+# Railway failure modes
+ltcm:TrackSettlement
+    a owl:Class ;
+    rdfs:subClassOf ltcm:FailureMode ;
+    rdfs:label "Track Settlement" ;
+    rdfs:comment "Sato-Odaka model: d = alpha * N^beta." .
+
+ltcm:DifferentialSettlement
+    a owl:Class ;
+    rdfs:subClassOf ltcm:TrackSettlement ;
+    rdfs:label "Differential Settlement" .
+
+# Road failure modes
+ltcm:PavementFatigue
+    a owl:Class ;
+    rdfs:subClassOf ltcm:FailureMode ;
+    rdfs:label "Pavement Fatigue" ;
+    rdfs:comment "DELTA_PCI = f(ESAL, layer stiffness). Pavement ME Design model." .
+
+ltcm:SubbaseFailure
+    a owl:Class ;
+    rdfs:subClassOf ltcm:FailureMode ;
+    rdfs:label "Sub-base Failure" .
+
+ltcm:MoistureIngress
+    a owl:Class ;
+    rdfs:subClassOf ltcm:SubbaseFailure ;
+    rdfs:label "Moisture Ingress" .
+
+# ---------------------------------------------------------------
+# SECTION 4: SENSOR CLASSIFICATION
+# ---------------------------------------------------------------
+
+ltcm:SensorReading
+    a owl:Class ;
+    rdfs:label "Sensor Reading" .
+
+ltcm:AccelerometerReading
+    a owl:Class ; rdfs:subClassOf ltcm:SensorReading ; rdfs:label "Accelerometer Reading" .
+
+ltcm:StrainGaugeReading
+    a owl:Class ; rdfs:subClassOf ltcm:SensorReading ; rdfs:label "Strain Gauge Reading" .
+
+ltcm:SettlementReading
+    a owl:Class ; rdfs:subClassOf ltcm:SensorReading ; rdfs:label "Settlement Sensor Reading" .
+
+ltcm:LoadCellReading
+    a owl:Class ; rdfs:subClassOf ltcm:SensorReading ; rdfs:label "Load Cell Reading" .
+
+ltcm:DisplacementReading
+    a owl:Class ; rdfs:subClassOf ltcm:SensorReading ; rdfs:label "Displacement Reading" .
+
+ltcm:VisualInspectionGrade
+    a owl:Class ; rdfs:subClassOf ltcm:SensorReading ; rdfs:label "Visual Inspection Grade" .
+
+ltcm:ProfilometerSurvey
+    a owl:Class ; rdfs:subClassOf ltcm:SensorReading ; rdfs:label "Profilometer Survey (PCI)" .
+
+ltcm:FWDMeasurement
+    a owl:Class ; rdfs:subClassOf ltcm:SensorReading ; rdfs:label "Falling Weight Deflectometer Measurement" .
+
+# ---------------------------------------------------------------
+# SECTION 5: OBJECT PROPERTIES
+# ---------------------------------------------------------------
+
+ltcm:anchorsTo
+    a owl:ObjectProperty ;
+    rdfs:domain ltcm:MemoryRecord ;
+    rdfs:range  ltcm:InfrastructureAsset ;
+    rdfs:label "anchors to" ;
+    rdfs:comment "Links a memory record to its IFC 4.3 element via GUID." .
+
+ltcm:causedBy
+    a owl:ObjectProperty ;
+    rdfs:domain ltcm:EpisodicRecord ;
+    rdfs:range  ltcm:FailureMode ;
+    rdfs:label "caused by" .
+
+ltcm:detectedBy
+    a owl:ObjectProperty ;
+    rdfs:domain ltcm:EpisodicRecord ;
+    rdfs:range  ltcm:SensorReading ;
+    rdfs:label "detected by" .
+
+ltcm:resolvedBy
+    a owl:ObjectProperty ;
+    rdfs:domain ltcm:EpisodicRecord ;
+    rdfs:range  ltcm:ProceduralGraph ;
+    rdfs:label "resolved by" .
+
+ltcm:predictedBy
+    a owl:ObjectProperty ;
+    rdfs:domain ltcm:SemanticNode ;
+    rdfs:range  ltcm:PredictiveRecord ;
+    rdfs:label "predicted by" .
+
+ltcm:recommendsProcedure
+    a owl:ObjectProperty ;
+    rdfs:domain ltcm:PredictiveRecord ;
+    rdfs:range  ltcm:ProceduralGraph ;
+    rdfs:label "recommends procedure" .
+
+ltcm:hasFailureMode
+    a owl:ObjectProperty ;
+    rdfs:domain ltcm:InfrastructureAsset ;
+    rdfs:range  ltcm:FailureMode ;
+    rdfs:label "has failure mode" .
+
+ltcm:precedesEvent
+    a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:domain ltcm:EpisodicRecord ;
+    rdfs:range  ltcm:EpisodicRecord ;
+    rdfs:label "precedes event" .
+
+ltcm:spatiallyAdjacentTo
+    a owl:ObjectProperty , owl:SymmetricProperty ;
+    rdfs:domain ltcm:InfrastructureAsset ;
+    rdfs:range  ltcm:InfrastructureAsset ;
+    rdfs:label "spatially adjacent to" .
+
+# ---------------------------------------------------------------
+# SECTION 6: DATATYPE PROPERTIES
+# ---------------------------------------------------------------
+
+ltcm:hasTimestamp
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:MemoryRecord ;
+    rdfs:range  xsd:dateTime ;
+    rdfs:label "has timestamp" .
+
+ltcm:hasIFCGUID
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:MemoryRecord ;
+    rdfs:range  xsd:string ;
+    rdfs:label "has IFC 4.3 GUID" .
+
+ltcm:hasSeverityScore
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:EpisodicRecord ;
+    rdfs:range  xsd:decimal ;
+    rdfs:label "has severity score (0-1)" .
+
+ltcm:hasSignificance
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:MemoryRecord ;
+    rdfs:range  xsd:decimal ;
+    rdfs:label "has CLS-LTCM significance score S(m)" .
+
+ltcm:hasFailureProbab
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:PredictiveRecord ;
+    rdfs:range  xsd:decimal ;
+    rdfs:label "has failure probability P(failure)" .
+
+ltcm:hasConfIntervalLo
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:PredictiveRecord ;
+    rdfs:range  xsd:decimal ;
+    rdfs:label "has 95% CI lower bound" .
+
+ltcm:hasConfIntervalHi
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:PredictiveRecord ;
+    rdfs:range  xsd:decimal ;
+    rdfs:label "has 95% CI upper bound" .
+
+ltcm:hasPINNModelRef
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:PredictiveRecord ;
+    rdfs:range  xsd:string ;
+    rdfs:label "has PINN model reference ID" .
+
+ltcm:hasTriggerCondition
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:ProceduralGraph ;
+    rdfs:range  xsd:string ;
+    rdfs:label "has trigger condition" .
+
+ltcm:hasDesignCodeRef
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:SemanticNode ;
+    rdfs:range  xsd:string ;
+    rdfs:label "has design code reference" .
+
+ltcm:hasMemoryTier
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:MemoryRecord ;
+    rdfs:range  xsd:string ;
+    rdfs:label "has memory tier (hot/warm/cold)" .
+
+ltcm:hasMeasurementVal
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:SensorReading ;
+    rdfs:range  xsd:decimal ;
+    rdfs:label "has measurement value" .
+
+ltcm:hasMeasurementUnit
+    a owl:DatatypeProperty ;
+    rdfs:domain ltcm:SensorReading ;
+    rdfs:range  xsd:string ;
+    rdfs:label "has measurement unit" .
+
+# ---------------------------------------------------------------
+# SECTION 7: DESIGN CODE INSTANCES (ABox examples)
+# ---------------------------------------------------------------
+
+ltcm:KR_C14020_SettlementThreshold
+    a ltcm:SemanticNode ;
+    rdfs:label "KR C-14020 Track Settlement Threshold" ;
+    ltcm:hasDesignCodeRef "KR C-14020" ;
+    ltcm:hasMeasurementVal "15"^^xsd:decimal ;
+    ltcm:hasMeasurementUnit "mm" ;
+    rdfs:comment "Absolute settlement 15 mm (Level-1); differential 3 mm (Level-2)." .
+
+ltcm:KDS_241020_BearingServiceLife
+    a ltcm:SemanticNode ;
+    rdfs:label "KDS 24 10 20 Bearing Service Life" ;
+    ltcm:hasDesignCodeRef "KDS 24 10 20" ;
+    ltcm:hasMeasurementVal "20"^^xsd:decimal ;
+    ltcm:hasMeasurementUnit "years" ;
+    rdfs:comment "Design service life 20 +/- 3 yr; coastal factor 1.4 (adjusted 14.3 yr)." .
+
+ltcm:MOLIT_PCI_InspectionFreq
+    a ltcm:SemanticNode ;
+    rdfs:label "MOLIT PCI Inspection Frequency" ;
+    ltcm:hasDesignCodeRef "MOLIT Road Maintenance Specification" ;
+    rdfs:comment "PCI 50-60: semi-annual profilometer + annual FWD. PCI < 50: quarterly + structural review." .
+
+# ---------------------------------------------------------------
+# SECTION 8: PINN MODEL INSTANCES
+# ---------------------------------------------------------------
+
+ltcm:PINN_SatoOdaka_CaseA
+    a ltcm:PredictiveRecord ;
+    rdfs:label "PINN Sato-Odaka Track Settlement Model (Case A)" ;
+    ltcm:hasPINNModelRef "PINN-A-SETTLE-v1" ;
+    rdfs:comment "d = alpha * N^beta. Fitted: alpha in [0.9,1.5], beta in [0.68,0.75]. 12-year corpus. RMSE 1.4 yr." .
+
+ltcm:PINN_ParisFatigue_CaseC
+    a ltcm:PredictiveRecord ;
+    rdfs:label "PINN Paris Law Fatigue Crack Growth (Case C)" ;
+    ltcm:hasPINNModelRef "PINN-C-FATIGUE-v1" ;
+    rdfs:comment "da/dN = C*(delta_K)^m. Calibrated from 32-year AE sensor and strain gauge records." .
+
+ltcm:PINN_PowerLawBearing_CaseC
+    a ltcm:PredictiveRecord ;
+    rdfs:label "PINN Power-Law Bearing Degradation (Case C)" ;
+    ltcm:hasPINNModelRef "PINN-C-BEAR-v1" ;
+    rdfs:comment "M_loss = k*t^n. Parameterized from load cell and inspection records (14 events)." .
