@@ -3,12 +3,12 @@
 **Signal-Driven Lifecycle Memory for SHM Digital Twins: A Memory-Augmented Retrieval-Grounded Generation Framework with Physics-Informed Prediction and Multi-Infrastructure Validation**
 
 Dong-Wook Kim · DL E&C Co., Ltd.
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22558619.svg)](https://doi.org/10.5281/zenodo.22558619)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22591646.svg)](https://doi.org/10.5281/zenodo.22591646)
 , Civil Smart Engineering Team, Seoul, Republic of Korea  
 ORCID: [0000-0002-0721-5114](https://orcid.org/0000-0002-0721-5114) · clearup7@nate.com
 
 *Manuscript submitted to Mechanical Systems and Signal Processing*  
-Zenodo DOI (reproducibility package): [10.5281/zenodo.22558619](https://doi.org/10.5281/zenodo.22558619)
+Zenodo DOI (reproducibility package): [10.5281/zenodo.22591646](https://doi.org/10.5281/zenodo.22591646)
 
 Manuscript DOI: *(to be assigned upon publication)*
 
