@@ -7,7 +7,6 @@ Dong-Wook Kim · DL E&C Co., Ltd.
 , Civil Smart Engineering Team, Seoul, Republic of Korea  
 ORCID: [0000-0002-0721-5114](https://orcid.org/0000-0002-0721-5114) · clearup7@nate.com
 
-*Manuscript submitted to Mechanical Systems and Signal Processing*  
 Zenodo DOI (reproducibility package): [10.5281/zenodo.22591646](https://doi.org/10.5281/zenodo.22591646)
 
 Manuscript DOI: *(to be assigned upon publication)*
